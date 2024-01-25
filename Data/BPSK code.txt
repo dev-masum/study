@@ -1,0 +1,22 @@
+ nData = 1000;
+>> Fc = 100;
+>> Fb = 100;
+>> Fs = 8*Fc;
+>> Ts = 1/Fs;
+>> Td = nData/Fb;
+>> spb = Fs/Fb;
+>> fSpan = 4;
+>> specAn1 = dsp.SpectrumAnalyzer("SampleRate", Fs, "Method","Filter bank","AveragingMethod","Exponential","Title", "Pulse Shaped Baseband BPSK");
+>> specAn2 = dsp.SpectrumAnalyzer("SampleRate", Fs, "Method","Filter bank","AveragingMethod","Exponential","Title", "BPSK Modulated Carrier");
+>> data = randi([0 M-1],nData,1);
+>> modData = real(pskmod(data,M));
+>> txFilter = comm.RaisedCosineTransmitFilter("FilterSpanInSymbols",fSpan,"OutputSamplesPerSymbol",spb);
+>> txfilterOut = txFilter(modData);
+>> specAn1(txfilterOut);
+>> 
+>> 
+>> sine = dsp.SineWave("Frequency",Fc,"SampleRate",Fs,"ComplexOutput",false,"SamplesPerFrame",Td/Ts);
+>> carrier = sine();
+>> txSignal = txfilterOut .* carrier;
+>> specAn2((txSignal));
+>> 
